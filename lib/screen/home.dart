@@ -1,8 +1,13 @@
+
+
+import 'package:anim_search_bar/anim_search_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:weather_app/model/weather_model.dart';
 import 'package:weather_app/widget/current_weather.dart';
 import 'package:weather_app/widget/details.dart';
+import 'package:weather_app/widget/weather_forcast.dart';
 
 import '../services/weather_service.dart';
 import '../widget/city_header.dart';
@@ -15,51 +20,62 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  WeatherService weatherService = Get.put(WeatherService());
+  WeatherService weatherService = Get.put(WeatherService(),permanent: true);
   String city = "";
   Weather? weatherData;
   Sun? sunData;
-  String? date;
+
 
   Future<void> getData() async {
-    weatherData = await weatherService.getWeatherCurrentLocation(
-        weatherService.getLatitude().toString(),
-        weatherService.getLongitude().toString());
+    city == ""
+        ? weatherData = await weatherService.getWeatherCurrentLocation(
+            weatherService.getLatitude().toString(),
+            weatherService.getLongitude().toString())
+        : weatherData = await weatherService.getWeatherCityLocation(city);
     sunData = await weatherService.getSun(
-        weatherService.getLatitude().toString(),
-        weatherService.getLongitude().toString());
-    setState(() {
-      date=DateTime.now().toString();
-    });
+        weatherData?.lati.toString(),
+        weatherData?.long.toString());
   }
 
+  @override
+  void initState()  {
+    getData();
+    super.initState();
 
+  }
 
   @override
   Widget build(BuildContext context) {
-    //final TextEditingController textEditingController = TextEditingController();
+    final TextEditingController textEditingController = TextEditingController();
     return Scaffold(
-        // appBar: AppBar(
-        //   actions: [
-        //     Container(
-        //         padding: const EdgeInsets.only(right: 5),
-        //         child: AnimSearchBar(
-        //           helpText: "Search City ..",
-        //           autoFocus: true,
-        //           rtl: true,
-        //           width: MediaQuery.of(context).size.width * 0.95,
-        //           textController: textEditingController,
-        //           onSuffixTap: null,
-        //           closeSearchOnSuffixTap: true,
-        //           onSubmitted: (String value) async {
-        //             // cityName = value;
-        //           },
-        //         ))
-        //   ],
-        // ),
-        body: RefreshIndicator(
-      onRefresh: getData,
-      child: FutureBuilder(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        centerTitle: true,
+        elevation: 0,
+        actions: [
+          Container(
+            padding: const EdgeInsets.only(right: 15),
+            child: AnimSearchBar(
+              helpText: "Search City ..",
+              autoFocus: true,
+              rtl: true,
+              width: MediaQuery.of(context).size.width * 0.95,
+              textController: textEditingController,
+              onSuffixTap: null,
+              closeSearchOnSuffixTap: true,
+              onSubmitted: (String value) async {
+                city = value;
+                getData();
+              },
+            ),
+          ),
+        ],
+        title: Text(
+          city,
+          style: const TextStyle(color: Colors.deepPurple, fontSize: 25),
+        ),
+      ),
+      body: FutureBuilder(
         future: getData(),
         builder: (
           BuildContext context,
@@ -76,11 +92,9 @@ class _HomePageState extends State<HomePage> {
                     '${weatherData?.main}',
                     '${weatherData?.feelLike}',
                     '${weatherData?.description}',
-                    '$date',
-
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 15),
                 Container(
                   child: currentWeatherDetails(
                     '${weatherData?.windSpeed}',
@@ -88,18 +102,18 @@ class _HomePageState extends State<HomePage> {
                     '${weatherData?.humidity}',
                   ),
                 ),
-                const SizedBox(height: 20),
-                Container(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 2.0, horizontal: 16.0),
-                    child: const Text(
-                      "Details",
-                      style: TextStyle(fontSize: 28),
-                    )),
-                const SizedBox(height: 20),
+                const SizedBox(height: 15),
+                Center(
+                    child: Text("Details",
+                        style: GoogleFonts.poppins(
+                          fontSize: 28.0,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.black,
+                        ))),
+                const SizedBox(height: 10),
                 SizedBox(
-                    height: 180,
-                    width: MediaQuery.of(context).size.width - 125,
+                    height: 170,
+                    width: MediaQuery.of(context).size.width - 15,
                     child: ListView(
                       scrollDirection: Axis.horizontal,
                       children: [
@@ -110,7 +124,45 @@ class _HomePageState extends State<HomePage> {
                           '${sunData?.sunSet}',
                         ),
                       ],
-                    ))
+                    )),
+                const SizedBox(height: 10),
+                Container(
+                  margin: const EdgeInsets.all(10),
+                  height: 350,
+                  padding: const EdgeInsets.all(15),
+                  decoration: BoxDecoration(
+                    color: Colors.deepPurple[50],
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Column(
+                    children: [
+                      Text(
+                        "Forecast for 4 days ",
+                        style: GoogleFonts.poppins(
+                          fontSize: 20.0,
+                          fontWeight: FontWeight.w500,
+                          letterSpacing: 0.5,
+                          color: Colors.black,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      SizedBox(
+                        height: 250,
+                        width: MediaQuery.of(context).size.width * 0.90,
+                        child: ListView.builder(
+                            itemCount: 4,
+                            itemBuilder: (BuildContext context, index) {
+                              return daily(
+                                "${weatherData?.dailyDT![index]}",
+                                "${weatherData?.dailyIcon?[index]}",
+                                "${weatherData?.dailyTempMax?[index]}",
+                                "${weatherData?.dailyTempMin?[index]}",
+                              );
+                            }),
+                      )
+                    ],
+                  ),
+                ),
               ],
             );
           } else if (snapshot.connectionState == ConnectionState.waiting) {
@@ -121,6 +173,6 @@ class _HomePageState extends State<HomePage> {
           return Container();
         },
       ),
-    ));
+    );
   }
 }

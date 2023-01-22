@@ -7,6 +7,7 @@ import 'package:weather_app/model/weather_model.dart';
 class WeatherService extends GetxController {
   final RxList<Weather> taskList = <Weather>[].obs;
   static const String _appID = '0f2154c2c523e55e85474c3760a03f5e';
+
   final RxBool _isLoading = true.obs;
   final RxDouble _latitude = 0.0.obs;
   final RxDouble _longitude = 0.0.obs;
@@ -29,7 +30,7 @@ class WeatherService extends GetxController {
     var httpsUri = Uri(
         scheme: 'https',
         host: 'api.openweathermap.org',
-        path: '/data/2.5/weather',
+        path: '/data/2.5/forecast',
         queryParameters: {
           'lat': lati,
           'lon': long,
@@ -40,8 +41,27 @@ class WeatherService extends GetxController {
 
     final http.Response response = await http.get(httpsUri);
     var body = jsonDecode(response.body);
-    return Weather.fromJson(body);
+    return Weather.fromJsonCurrent(body);
   }
+  Future<Weather> getWeatherCityLocation(String? cName) async {
+    var httpsUri = Uri(
+        scheme: 'https',
+        host: 'api.openweathermap.org',
+        path: '/data/2.5/forecast',
+        queryParameters: {
+          'q':cName,
+          'appid': _appID,
+          'units': 'metric',
+          'lang': 'ar'
+        });
+
+
+
+    final http.Response response = await http.get(httpsUri);
+    var body = jsonDecode(response.body);
+    return Weather.fromJsonCurrent(body);
+  }
+
   Future<Sun> getSun(String? lati, String? long) async {
     var httpsUri = Uri(
         scheme: 'https',
@@ -57,7 +77,6 @@ class WeatherService extends GetxController {
     var body = jsonDecode(response.body);
     return Sun.fromJson(body);
   }
-
 
   getLocation() async {
     bool isServiceEnabled;
