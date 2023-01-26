@@ -6,7 +6,7 @@ import 'package:weather_app/model/weather_model.dart';
 
 class WeatherService extends GetxController {
   final RxList<Weather> taskList = <Weather>[].obs;
-  static const String _appID = '0f2154c2c523e55e85474c3760a03f5e';
+  static const String _appID = 'your api key';
 
   final RxBool _isLoading = true.obs;
   final RxDouble _latitude = 0.0.obs;
@@ -68,7 +68,7 @@ class WeatherService extends GetxController {
         host: 'api.ipgeolocation.io',
         path: 'astronomy',
         queryParameters: {
-          'apiKey': '1092167f5275416089375ad1f1841d87',
+          'apiKey': 'your api key',
           'lat': lati,
           'long': long,
         });
