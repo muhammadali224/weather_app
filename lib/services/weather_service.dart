@@ -6,7 +6,7 @@ import 'package:weather_app/model/weather_model.dart';
 
 class WeatherService extends GetxController {
   final RxList<Weather> taskList = <Weather>[].obs;
-  static const String _appID = 'your api key';
+  static const String _appID = '0f2154c2c523e55e85474c3760a03f5e';
 
   final RxBool _isLoading = true.obs;
   final RxDouble _latitude = 0.0.obs;
