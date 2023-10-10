@@ -3,7 +3,6 @@
 import 'package:anim_search_bar/anim_search_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:weather_app/model/weather_model.dart';
 import 'package:weather_app/widget/current_weather.dart';
 import 'package:weather_app/widget/details.dart';
@@ -24,7 +23,12 @@ class _HomePageState extends State<HomePage> {
   String city = "";
   Weather? weatherData;
   Sun? sunData;
+  @override
+  void initState()  {
+    getData();
+    super.initState();
 
+  }
 
   Future<void> getData() async {
     city == ""
@@ -37,12 +41,7 @@ class _HomePageState extends State<HomePage> {
         weatherData?.long.toString());
   }
 
-  @override
-  void initState()  {
-    getData();
-    super.initState();
 
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -105,7 +104,7 @@ class _HomePageState extends State<HomePage> {
                 const SizedBox(height: 15),
                 Center(
                     child: Text("Details",
-                        style: GoogleFonts.poppins(
+                        style: const TextStyle(
                           fontSize: 28.0,
                           fontWeight: FontWeight.w400,
                           color: Colors.black,
@@ -138,7 +137,7 @@ class _HomePageState extends State<HomePage> {
                     children: [
                       Text(
                         "Forecast for 4 days ",
-                        style: GoogleFonts.poppins(
+                        style: const TextStyle(
                           fontSize: 20.0,
                           fontWeight: FontWeight.w500,
                           letterSpacing: 0.5,

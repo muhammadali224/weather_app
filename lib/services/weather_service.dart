@@ -5,12 +5,16 @@ import 'package:http/http.dart' as http;
 import 'package:weather_app/model/weather_model.dart';
 
 class WeatherService extends GetxController {
-  final RxList<Weather> taskList = <Weather>[].obs;
   static const String _appID = '0f2154c2c523e55e85474c3760a03f5e';
 
   final RxBool _isLoading = true.obs;
   final RxDouble _latitude = 0.0.obs;
   final RxDouble _longitude = 0.0.obs;
+
+  // RxString? city;
+  //
+  // Weather? weatherData;
+  // Sun? sunData;
 
   RxBool checkLoading() => _isLoading;
 
@@ -23,39 +27,46 @@ class WeatherService extends GetxController {
     if (_isLoading.isTrue) {
       getLocation();
     }
+    // getData();
     super.onInit();
   }
 
-  Future<Weather> getWeatherCurrentLocation(String? lati, String? long) async {
-    var httpsUri = Uri(
-        scheme: 'https',
-        host: 'api.openweathermap.org',
-        path: '/data/2.5/forecast',
-        queryParameters: {
-          'lat': lati,
-          'lon': long,
-          'appid': _appID,
-          'units': 'metric',
-          'lang': 'ar'
-        });
+  getWeatherCurrentLocation(String? lati, String? long) async {
+    try {
 
-    final http.Response response = await http.get(httpsUri);
-    var body = jsonDecode(response.body);
-    return Weather.fromJsonCurrent(body);
+      var httpsUri = Uri(
+          scheme: 'https',
+          host: 'api.openweathermap.org',
+          path: '/data/2.5/forecast',
+          queryParameters: {
+            'lat': lati,
+            'lon': long,
+            'appid': _appID,
+            'units': 'metric',
+            'lang': 'ar'
+          });
+
+      var response = await http.get(httpsUri);
+      if (response.statusCode == 200) {
+        var responseBody = jsonDecode(response.body);
+        return responseBody;
+      }
+    } catch (e) {
+      print("Error Catch: $e");
+    }
   }
+
   Future<Weather> getWeatherCityLocation(String? cName) async {
     var httpsUri = Uri(
         scheme: 'https',
         host: 'api.openweathermap.org',
         path: '/data/2.5/forecast',
         queryParameters: {
-          'q':cName,
+          'q': cName,
           'appid': _appID,
           'units': 'metric',
           'lang': 'ar'
         });
-
-
 
     final http.Response response = await http.get(httpsUri);
     var body = jsonDecode(response.body);
@@ -68,7 +79,7 @@ class WeatherService extends GetxController {
         host: 'api.ipgeolocation.io',
         path: 'astronomy',
         queryParameters: {
-          'apiKey': 'your api key',
+          'apiKey': '1092167f5275416089375ad1f1841d87',
           'lat': lati,
           'long': long,
         });
@@ -104,4 +115,13 @@ class WeatherService extends GetxController {
       _isLoading.value = false;
     });
   }
+
+  // Future<void> getData() async {
+  //   city == ""
+  //       ? weatherData = await getWeatherCurrentLocation(
+  //           getLatitude().toString(), getLongitude().toString())
+  //       : weatherData = await getWeatherCityLocation(city?.value);
+  //   sunData = await getSun(
+  //       weatherData?.lati.toString(), weatherData?.long.toString());
+  // }
 }

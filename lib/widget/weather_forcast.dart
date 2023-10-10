@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
 String getDay(final day) {
@@ -26,12 +25,13 @@ Widget daily(String dateOfDay, String icon, String minTemp, String maxTemp) {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
-                getDay(int.parse(dateOfDay)),style:  GoogleFonts.poppins(
-                fontSize: 20.0,
-                fontWeight: FontWeight.w500,
-                letterSpacing: 0.5,
-                color: Colors.black,
-              ),
+                getDay(int.parse(dateOfDay)),
+                style: const TextStyle(
+                  fontSize: 20.0,
+                  fontWeight: FontWeight.w500,
+                  letterSpacing: 0.5,
+                  color: Colors.black,
+                ),
               ),
               Image.asset(
                 "assets/images/weather/$icon.png",
@@ -40,7 +40,7 @@ Widget daily(String dateOfDay, String icon, String minTemp, String maxTemp) {
               ),
               Text(
                 "$maxTemp/$minTemp \u2103",
-                style:  GoogleFonts.poppins(
+                style: const TextStyle(
                   fontSize: 20.0,
                   fontWeight: FontWeight.w500,
                   letterSpacing: 0.5,

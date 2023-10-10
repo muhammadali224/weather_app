@@ -51,7 +51,8 @@ Widget cityHeader(String location, String temp, String iconID, String main,
             ),
             Column(children: [
               Text(
-                '${double.parse(temp).round().toString()} \u2103 ',
+                // '${double.parse(temp).round().toString()} \u2103 ',
+                '${temp} \u2103 ',
                 style: const TextStyle(fontSize: 45),
               ),
               Text('feel Like $fellLike \u2103')
